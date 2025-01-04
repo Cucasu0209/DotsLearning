@@ -11,23 +11,23 @@ partial struct UnitMoverSystem : ISystem
     {
         foreach ((
             RefRW<LocalTransform> localTransform,
-            RefRO<MoveSpeed> moveSpeed,
+            RefRO<UnitMover> unitMover,
             RefRW<PhysicsVelocity> physicVelocity)
             in SystemAPI.Query<
                 RefRW<LocalTransform>,
-                RefRO<MoveSpeed>,
+                RefRO<UnitMover>,
                 RefRW<PhysicsVelocity>>())
         {
-            float3 targetPosition = MouseWorldPosition.Instance.GetPosition();
-            float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
+
+            float3 moveDirection = unitMover.ValueRO.TargetPosition - localTransform.ValueRO.Position;
+            moveDirection = new float3(moveDirection.x, 0, moveDirection.z);
             moveDirection = math.normalize(moveDirection);
 
-            float rotationSpeed = 10f;
 
 
-            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), SystemAPI.Time.DeltaTime * rotationSpeed);
+            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), SystemAPI.Time.DeltaTime * unitMover.ValueRO.RotationSpeed);
             //localTransform.ValueRW.Position += moveDirection * moveSpeed.ValueRO.Value * SystemAPI.Time.DeltaTime;
-            physicVelocity.ValueRW.Linear = moveDirection * moveSpeed.ValueRO.Value;
+            physicVelocity.ValueRW.Linear = moveDirection * unitMover.ValueRO.MoveSpeed;
             physicVelocity.ValueRW.Angular = float3.zero;
         }
     }

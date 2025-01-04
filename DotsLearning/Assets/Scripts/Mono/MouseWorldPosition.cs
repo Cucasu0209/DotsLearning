@@ -7,7 +7,7 @@ public class MouseWorldPosition : MonoBehaviour
     public static MouseWorldPosition Instance;
     private void Awake()
     {
-        Instance = this;
+        Instance = this; 
     }
     public Vector3 GetPosition()
     {
